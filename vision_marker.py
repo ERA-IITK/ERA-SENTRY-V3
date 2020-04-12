@@ -17,7 +17,7 @@ import matplotlib.image as img
 aruco_dict = aruco.custom_dictionary(44, 5, 1)
 # add empty bytesList array to fill with 3 markers later
 aruco_dict.bytesList = np.empty(shape = (44, 4, 4), dtype = np.uint8)
-
+print(cv2.CV_FOURCC('m', 'p', '4', 'v'))
 # add new marker(s)
 mybits = np.array([[0,1,1,0,0],[1,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[1,1,1,1,1]], dtype = np.uint8)
 aruco_dict.bytesList[0] = aruco.Dictionary_getByteListFromBits(mybits)
@@ -121,9 +121,18 @@ mybits = np.array([[0,0,0,0,0],[0,1,1,1,0],[0,1,1,1,0],[0,1,1,1,0],[0,0,0,0,0]],
 aruco_dict.bytesList[42] = aruco.Dictionary_getByteListFromBits(mybits)
 mybits = np.array([[1,1,1,1,1],[1,0,1,0,1],[1,1,1,1,1],[1,0,1,0,1],[1,1,1,1,1]], dtype = np.uint8)
 aruco_dict.bytesList[43] = aruco.Dictionary_getByteListFromBits(mybits)
-
-frame = cv2.imread("lol3.png")
-
+cap = cv2.VideoCapture('video/Sentry_1.mkv')
+ret, frame = cap.read()
+frame= cv2.imread("lol5.png")
+# ret, img = cap.read()
+# scale_percent = 40 # percent of original size
+# width = int(img.shape[1] * scale_percent / 100)
+# height = int(img.shape[0] * scale_percent / 100)
+# dim = (width, height)
+# # fourcc = cv.VideoWriter_fourcc(*'XVID')
+# # out = cv.VideoWriter('1.avi',fourcc, 20.0, (dim[1],dim[0]))
+# # resize image
+# frame = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
 frame1=cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 lower_yel = np.array([23,41,133], dtype = "uint8")
 upper_yel = np.array([60,255,255], dtype = "uint8")
@@ -132,27 +141,28 @@ frame1=255-frame1
 # clahe = cv2.createCLAHE(clipLimit=22.0, tileGridSize=(10,30))
 # frame1 = clahe.apply(frame1)
 
-# frame1 = cv2.adaptiveThreshold(frame1, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,11,2)
-# cv2.imshow('1', frame1)
-# cv2.waitKey()
+frame1 = cv2.adaptiveThreshold(frame1, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,11,2)
+cv2.imshow('1', frame1)
+# cv2.waitKey(-1)
 #lists of ids and the corners beloning to each id
 corners, ids, rejectedImgPoints = aruco.detectMarkers(frame1, aruco_dict)
 # draw markers on farme
 frame1 = aruco.drawDetectedMarkers(frame, corners, (ids),  borderColor=(0, 255, 0))
-print(ids)
-# cv2.waitKey()
+# print(corners)
+# cv2.waitKey(0)
 center=[0]*(2*len(ids))
 m=0
 while m < (len(ids)):
     x = int((corners[m][0][0][0] + corners[m][0][1][0] + corners[m][0][2][0] + corners[m][0][3][0]) / 4)
     y = int((corners[m][0][0][1] + corners[m][0][1][1] + corners[m][0][2][1] + corners[m][0][3][1]) / 4)
-    print(x, y)
+    print(x, y,)
     center[2*m]=x
     center[2*m+1]=y
     m=m+1
 
 cv2.imshow('frame',frame)
-cv2.imwrite('detected_markers0.jpg',frame)
+cv2.waitKey(0)
+cv2.imwrite('detected_markers6.jpg',frame)
 # cv2.waitKey()
 root=Tk()
 
@@ -284,7 +294,7 @@ print(pts1)
 print(pts2)
 M = cv2.getPerspectiveTransform(pts1,pts2)
 
-dst = cv2.warpPerspective(img,M,(808, 448))
+# dst = cv2.warpPerspective(img,M,(808, 448))
 
 # plt.subplot(121),plt.imshow(img),plt.title('Input')
 plt.subplot(),plt.imshow(dst),plt.title('Output')
